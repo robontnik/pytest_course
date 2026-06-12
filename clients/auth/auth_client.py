@@ -2,6 +2,8 @@ from clients.api_client import APIClient
 from httpx import Response
 from typing import TypedDict
 
+from clients.public_http_builder import get_public_http_client
+
 
 class LoginRequestDict(TypedDict):
     """
@@ -15,6 +17,17 @@ class RefreshRequestDict(TypedDict):
     Описание структуры запроса для обновления токена.
     """
     refreshToken : str
+
+class Token(TypedDict) : 
+
+    tokenType : str
+    accessToken : str
+    refreshToken : str
+
+class LoginResponseDict(TypedDict) : 
+
+    token : Token
+
 
 class AuthenticationClient(APIClient):
     """
@@ -39,3 +52,13 @@ class AuthenticationClient(APIClient):
         :return: Ответ от сервера в виде объекта httpx.Response
         """
         return self.post('/api/v1/authentication/refresh', json = request)
+    
+    def login(self, request : LoginRequestDict) ->LoginResponseDict:
+
+        response = self.login_api(request)
+        return response.json()
+    
+
+def get_auth_client() -> AuthenticationClient:
+
+    return AuthenticationClient(client=get_public_http_client())

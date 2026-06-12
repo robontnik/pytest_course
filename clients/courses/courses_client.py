@@ -4,20 +4,31 @@ from clients.api_client import APIClient
 from httpx import Response 
 from typing import TypedDict
 
+from clients.files.files_clients import File
+from clients.private_http_builder import AuthenticationUserDict, get_private_http_client
+from clients.users.public_users_client import User
+
+
+class Course(TypedDict):
+
+    id: str
+    title : str
+    maxScore : int
+    minScore : int
+    description : str
+    previewFile : File
+    estimatedTime : str
+    createdByUser : User
+
+class CreateCourseResponseDict(TypedDict):
+
+    course : Course
+
+
 class GetCoursesQueryDict(TypedDict):
     userId : str
 
-class CreateCourseResponseDict(TypedDict):
-    
-    title : str
-    maxScore : str
-    minScore : str
-    description : str
-    estimatedTime : str
-    previewFileId : str
-    createdByUserId : str
-
-class CreateCourseResponseDict(TypedDict):
+class CreateCourseRequestDict(TypedDict):
     
     title : str
     maxScore : int
@@ -25,7 +36,8 @@ class CreateCourseResponseDict(TypedDict):
     description : str
     estimatedTime : str
     previewFileId : str
-    createdByUserId : str    
+    createdByUserId : str
+
 
 class UpdateCourseRequestDict(TypedDict):
     
@@ -47,7 +59,7 @@ class CoursesCLient(APIClient):
 
         return self.get(f'/api/v1/courses/{course_id}')
     
-    def create_course_api(self, request: CreateCourseResponseDict) -> Response :
+    def create_course_api(self, request: CreateCourseRequestDict) -> Response :
 
         return self.post('/api/v1/courses', json = request)
     
@@ -58,3 +70,13 @@ class CoursesCLient(APIClient):
     def delete_course_api(self, course_id : str) -> Response:
 
         return self.delete(f'/api/v1/courses/{course_id}')
+    
+    def create_course(self,request : CreateCourseRequestDict) -> CreateCourseResponseDict:
+
+        response = self.create_course_api(request)
+        return response.json()
+    
+
+def get_courses_client(user : AuthenticationUserDict)->CoursesCLient:
+    
+    return CoursesCLient(client=get_private_http_client(user))
