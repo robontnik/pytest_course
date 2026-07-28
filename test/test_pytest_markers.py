@@ -3,7 +3,6 @@
 import pytest
 
 
-@pytest.mark.smoke
 def test_smoke_case():
     assert 1+1==2
 

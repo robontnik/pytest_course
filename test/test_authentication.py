@@ -8,7 +8,8 @@ from clients.users.public_users_client import PublicUserClient, get_public_users
 from clients.users.usersSchema import CreateUserRequestSchema
 
 
-from test.conftest import UserFixture
+
+from fixtures.users import UserFixture
 from tools.assertions.authentication import assert_login_response
 from tools.assertions.base import assert_status_code
 from tools.assertions.schema import validate_json_schema
