@@ -1,6 +1,7 @@
+import email
 from http import HTTPStatus
 import pytest
-
+from tools.fakers import fake
 from clients.users.private_users_client import PrivateUsersClient
 from clients.users.public_users_client import PublicUserClient, get_public_users_client
 from clients.users.usersSchema import CreateUserRequestSchema, CreateUserResponseSchema, GetUserResponseSchema
@@ -9,10 +10,18 @@ from tools.assertions.base import assert_status_code
 from tools.assertions.schema import validate_json_schema
 from tools.assertions.users import assert_create_user_response,assert_get_user_response
 
+domain = {
+    'mail.ru' : 'User with domain mail.ru',
+    'gmail.com' : 'User with ddomain gmail.com',
+    'example.com' : 'User with domain example.com'
+}
+
 @pytest.mark.users
 @pytest.mark.regression
-def test_create_user(public_users_client: PublicUserClient):
-    request = CreateUserRequestSchema()
+@pytest.mark.parametrize('email', domain.keys(), ids = lambda email : f'{domain[email]}')
+def test_create_user(email : str, public_users_client: PublicUserClient):
+    
+    request = CreateUserRequestSchema(email = fake.email(domain = email))
     response = public_users_client.create_user_api(request)
     response_data = CreateUserResponseSchema.model_validate_json(response.text)
     assert_status_code(response.status_code, HTTPStatus.OK)

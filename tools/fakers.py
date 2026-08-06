@@ -14,9 +14,9 @@ class Fake:
 
         return self.faker.uuid4()
     
-    def email(self)->str:
+    def email(self, domain : str | None = None)->str:
 
-        return self.faker.email()
+        return self.faker.email(domain=domain)
     
     def sentence(self)->str:
 
